@@ -65,7 +65,7 @@ conv5 = tf.layers.conv2d(conv4_resize, 64, (3, 3), padding='same', activation=tf
 conv5_resize = tf.image.resize_nearest_neighbor(conv5, (28, 28))
 conv6 = tf.layers.conv2d(conv5_resize, 64, (3, 3), padding='same', activation=tf.nn.relu)
 
-y_conv = tf.layers.conv2d(conv6, 1, (3, 3), padding='same', activation=tf.nn.relu)
+y_conv = tf.layers.conv2d(conv6, 1, (3, 3), padding='same', activation=None)
 
 outputs = tf.nn.sigmoid(y_conv)
 
