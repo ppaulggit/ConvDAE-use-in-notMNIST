@@ -8,7 +8,7 @@ import random
 
 sess = tf.Session()
 
-pickle_file = '../DATASET/notMNIST.pickle'
+pickle_file = 'notMNIST.pickle'
 
 with open(pickle_file, 'rb') as f:
     save = pickle.load(f)
@@ -29,8 +29,7 @@ num_labels = 10
 num_channels = 1  # grayscale
 
 
-def reformat(dataset, labels):
-    dataset = dataset.reshape((-1, image_size, image_size, num_channels)).astype(np.float32)
+def reformat(dataset, labels):    dataset = dataset.reshape((-1, image_size, image_size, num_channels)).astype(np.float32)
     labels = (np.arange(num_labels) == labels[:, None]).astype(np.float32)
     return dataset, labels
 
@@ -39,7 +38,7 @@ valid_dataset, valid_labels = reformat(valid_dataset, valid_labels)
 test_dataset, test_labels = reformat(test_dataset, test_labels)
 
 batch_size = 128
-num_steps = 1001
+num_steps = 3001
 num_hiddens = 64
 
 # Input data.
@@ -47,25 +46,19 @@ inputs = tf.placeholder(tf.float32, shape=(None, image_size, image_size, num_cha
 targets = tf.placeholder(tf.float32, shape=(None, image_size, image_size, num_channels))
 
 # Model.
-conv1 = tf.layers.conv2d(inputs, 64, (3, 3), padding='same', activation=tf.nn.relu)
+conv1 = tf.layers.conv2d(inputs, 64, (5, 5), padding='same', activation=tf.nn.relu)
 pool1 = tf.layers.max_pooling2d(conv1, (2, 2), (2, 2), padding='same')
 
-conv2 = tf.layers.conv2d(pool1, 64, (3, 3), padding='same', activation=tf.nn.relu)
+conv2 = tf.layers.conv2d(pool1, 64, (5, 5), padding='same', activation=tf.nn.relu)
 pool2 = tf.layers.max_pooling2d(conv2, (2, 2), (2, 2), padding='same')
 
-conv3 = tf.layers.conv2d(pool2, 32, (3, 3), padding='same', activation=tf.nn.relu)
-pool3 = tf.layers.max_pooling2d(conv3, (2, 2), (2, 2), padding='same')
+conv3_resize = tf.image.resize_nearest_neighbor(pool2, (14, 14))
+conv4 = tf.layers.conv2d(conv3_resize, 64, (5, 5), padding='same', activation=tf.nn.relu)
 
-pool3_resize = tf.image.resize_nearest_neighbor(pool3, (7, 7))
-conv4 = tf.layers.conv2d(pool3_resize, 32, (3, 3), padding='same', activation=tf.nn.relu)
+conv4_resize = tf.image.resize_nearest_neighbor(conv4, (28, 28))
+conv5 = tf.layers.conv2d(conv4_resize, 64, (5, 5), padding='same', activation=tf.nn.relu)
 
-conv4_resize = tf.image.resize_nearest_neighbor(conv4, (14, 14))
-conv5 = tf.layers.conv2d(conv4_resize, 64, (3, 3), padding='same', activation=tf.nn.relu)
-
-conv5_resize = tf.image.resize_nearest_neighbor(conv5, (28, 28))
-conv6 = tf.layers.conv2d(conv5_resize, 64, (3, 3), padding='same', activation=tf.nn.relu)
-
-y_conv = tf.layers.conv2d(conv6, 1, (3, 3), padding='same', activation=None)
+y_conv = tf.layers.conv2d(conv5, 1, (5, 5), padding='same', activation=None)
 
 outputs = tf.nn.sigmoid(y_conv)
 
