@@ -13,4 +13,4 @@ And the notMNIST dataset you can find in https://github.com/hankcs/udacity-deep-
 Here is the result.
 The first row is add noisy images, the second row is the denoise images after 
 ConvDAE processing.
-![image](https://github.com/PaulGitt/ConvDAE-use-in-notMNIST/blob/master/Result.png)
+![image]()
